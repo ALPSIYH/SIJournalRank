@@ -1,10 +1,9 @@
 # SI Journal Rank
 
-這是一個完全獨立、不依賴 easyScholar 的瀏覽器擴充功能。
+在學術搜尋與出版社文章頁上，直接標出這本期刊收錄於哪些評價體系的瀏覽器擴充功能。
 
-- 不使用 easyScholar 的名稱、圖示、程式碼或伺服器
-- 不要求登入
-- 期刊評價資料全部儲存在本機
+- 期刊評價資料全部儲存在本機，不連任何伺服器
+- 不要求登入，也不收集瀏覽紀錄
 - 支援 PubMed、Google Scholar，以及主要出版社文章頁顯示期刊標籤
 
 目前有專用文章頁 adapter 的出版社：ScienceDirect、Springer Nature、Wiley、
@@ -27,9 +26,9 @@ Taylor & Francis、SAGE、Nature、Oxford Academic、IEEE Xplore 與 ACM Digital
 1. 開啟 `chrome://extensions`
 2. 開啟「開發人員模式」
 3. 點「載入未封裝項目」
-4. 選擇這個資料夾：`/path/to/SIJournalRank`
+4. 選擇這個專案的資料夾
 
 ## Safari
 
-Safari Web Extension 的 Xcode 專案位於：
-`/path/to/SIJournalRank-safari/SIJournalRank/SIJournalRank.xcodeproj`。
+Safari Web Extension 的 Xcode 專案位於 `SIJournalRank-safari` 專案：
+`SIJournalRank/SIJournalRank.xcodeproj`。

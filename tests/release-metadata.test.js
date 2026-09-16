@@ -12,7 +12,8 @@
  *      show the same short version).
  *   2. BOTH README files (root README.md and the Safari Xcode project's
  *      "SIJournalRank Extension/Resources/README.md") contain no stale
- *      "LocalJournalRank" path and contain the correct SIJournalRank path.
+ *      "LocalJournalRank" path, hardcode no local home directory, and point
+ *      at the Safari Xcode project by relative path.
  *
  * Run:  node tests/release-metadata.test.js
  * ========================================================================= */
@@ -39,7 +40,7 @@ function check(name, pass, detail) {
 }
 
 function main() {
-  console.log('# SI Journal Rank — release metadata (manifest version == Xcode MARKETING_VERSION; no stale LocalJournalRank path)');
+  console.log('# SI Journal Rank — release metadata (manifest version == Xcode MARKETING_VERSION; READMEs carry no stale or personal paths)');
   console.log('');
 
   const manifest = JSON.parse(fs.readFileSync(MANIFEST, 'utf8'));
@@ -66,26 +67,32 @@ function main() {
     'versions=' + JSON.stringify(marketingVersions)
   );
 
-  const CORRECT_PATH = '/path/to/SIJournalRank';
+  // A published README must not pin the author's machine: a reader has to be
+  // able to load the extension from wherever they cloned the project.
+  const HOME_PATH = /\/(?:Users|home)\/[^/\s`]+/;
   const readmePairs = [
     { label: 'root README', file: README },
     { label: 'Xcode Resources README', file: RESOURCES_README }
   ];
   for (const pair of readmePairs) {
     const text = fs.readFileSync(pair.file, 'utf8');
+    const stale = text.includes('LocalJournalRank');
     check(
       pair.label + ' contains no "LocalJournalRank" project path',
-      !text.includes('LocalJournalRank'),
-      text.includes('LocalJournalRank')
-        ? 'stale path found: /path/to/LocalJournalRank'
-        : 'clean'
+      !stale,
+      stale ? 'stale project name found' : 'clean'
     );
+    const home = text.match(HOME_PATH);
     check(
-      pair.label + ' contains the correct SIJournalRank path',
-      text.includes(CORRECT_PATH),
-      text.includes(CORRECT_PATH)
-        ? CORRECT_PATH
-        : 'missing ' + CORRECT_PATH
+      pair.label + ' hardcodes no local home directory',
+      !home,
+      home ? 'found ' + home[0] : 'clean'
+    );
+    const safari = text.includes('SIJournalRank.xcodeproj');
+    check(
+      pair.label + ' points at the Safari Xcode project by relative path',
+      safari,
+      safari ? 'SIJournalRank.xcodeproj' : 'missing SIJournalRank.xcodeproj'
     );
   }
 

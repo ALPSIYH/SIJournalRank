@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Build easyScholar-local data/rank-data.json from raw CSSCI, XR2026, JCR2025 and official JCR xlsx."""
+"""Build SI Journal Rank's data/rank-data.json from raw CSSCI, XR2026, JCR2025 and official JCR xlsx."""
 import csv
 import json
 import pathlib

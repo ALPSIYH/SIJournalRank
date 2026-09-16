@@ -1,5 +1,5 @@
 /* =========================================================================
-   SI Journal Rank — badge styles (EasyScholar-inspired pill family)
+   SI Journal Rank — badge styles (compact pill family)
    Compact isolated pill family: 11px font, ~6px radius, 19px height (18.5–19.05px band).
    Every extension-critical declaration is scoped under .ljr-badges and
    marked !important so hostile publisher CSS (span / [role=button] rules
