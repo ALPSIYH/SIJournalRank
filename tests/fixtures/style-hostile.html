@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<title>SI Journal Rank — hostile-publisher style fixture</title>
+
+<!-- Hostile-publisher regression fixture. The REAL production stylesheet
+     under test is linked FIRST, then hostile publisher CSS is loaded AFTER
+     it with !important rules on plain span / [role=button] (font-size 24px,
+     padding 20px, display block, gray background, radius 0). The extension's
+     scoped .ljr-badges rules must win every one of these battles. -->
+
+<!-- Fixture layout surface (neutral, not part of hostile rules) -->
+<style>
+  #scholar-meta, #publisher { width: 640px; font-family: sans-serif; }
+</style>
+
+<!-- The REAL production stylesheet under test -->
+<link rel="stylesheet" href="../../content.css">
+
+<!-- Hostile publisher CSS — loaded AFTER content.css on purpose -->
+<style>
+  span {
+    font-size: 24px !important;
+    line-height: 1.6 !important;
+    padding: 20px !important;
+    display: block !important;
+    background: #999999 !important;
+    border-radius: 0 !important;
+    box-sizing: content-box !important;
+    white-space: normal !important;
+    color: #999999 !important;
+    border: 0 none !important;
+  }
+  [role="button"] {
+    font-size: 24px !important;
+    line-height: 1.6 !important;
+    padding: 20px !important;
+    display: block !important;
+    background: #999999 !important;
+    border-radius: 0 !important;
+    box-sizing: content-box !important;
+    white-space: normal !important;
+    color: #999999 !important;
+    border: 0 none !important;
+    flex-wrap: wrap !important;
+    appearance: button !important;
+    -webkit-appearance: button !important;
+  }
+</style>
+</head>
+<body>
+<main>
+  <!-- Scholar metadata case: holder sits INSIDE .gs_a and must stay inline
+       beside the metadata text (6px left separation, baseline alignment). -->
+  <div class="gs_a" id="scholar-meta">
+    Author A, Author B, Author C.
+    <span class="ljr-badges" id="holder-scholar">
+      <span class="ljr-badge ljr-q1">SCI Q1</span>
+      <span class="ljr-badge ljr-ahci">A&amp;HCI</span>
+      <span class="ljr-more" role="button" tabindex="0" aria-expanded="true" aria-label="收起">
+        <span class="ljr-more-label">收起</span>
+        <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true"><path d="M1 1l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="ljr-detail">
+        <span class="ljr-detail-group">
+          <span class="ljr-detail-title">JCR</span>
+          <span class="ljr-detail-row"><span class="ljr-detail-cat">Political Science</span><span class="ljr-detail-q">Q1</span></span>
+        </span>
+      </span>
+    </span>
+  </div>
+
+  <!-- Publisher case: compact standalone row immediately under the article
+       title, zero left offset, width limited to content / max 440px. -->
+  <section id="publisher">
+    <h1 class="article-title" id="article-title">A Sample Article Title About International Relations</h1>
+    <span class="ljr-badges ljr-publisher-row" id="holder-publisher">
+      <span class="ljr-badge ljr-q1">SCI Q1</span>
+      <span class="ljr-badge ljr-top">新銳Top</span>
+      <span class="ljr-more" role="button" tabindex="0" aria-expanded="false" aria-label="分類詳情">
+        <span class="ljr-more-label">分類詳情</span>
+        <svg width="8" height="5" viewBox="0 0 8 5" aria-hidden="true"><path d="M1 1l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </span>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  function measure(sel) {
+    var el = document.querySelector(sel);
+    if (!el) return null;
+    var s = getComputedStyle(el);
+    var r = el.getBoundingClientRect();
+    function num(v) { return parseFloat(v); }
+    return {
+      display: s.display,
+      width: r.width,
+      height: r.height,
+      marginTop: num(s.marginTop),
+      marginRight: num(s.marginRight),
+      marginBottom: num(s.marginBottom),
+      marginLeft: num(s.marginLeft),
+      verticalAlign: s.verticalAlign,
+      fontSize: num(s.fontSize),
+      lineHeight: s.lineHeight,
+      paddingTop: num(s.paddingTop),
+      paddingRight: num(s.paddingRight),
+      paddingBottom: num(s.paddingBottom),
+      paddingLeft: num(s.paddingLeft),
+      borderTopWidth: num(s.borderTopWidth),
+      radiusTL: num(s.borderTopLeftRadius),
+      radiusTR: num(s.borderTopRightRadius),
+      radiusBR: num(s.borderBottomRightRadius),
+      radiusBL: num(s.borderBottomLeftRadius),
+      backgroundColor: s.backgroundColor,
+      color: s.color,
+      boxSizing: s.boxSizing,
+      whiteSpace: s.whiteSpace,
+      flexWrap: s.flexWrap,
+      flexDirection: s.flexDirection,
+      flexBasis: s.flexBasis,
+      maxWidth: s.maxWidth,
+      widthCss: s.width,
+      cursor: s.cursor,
+      appearance: s.appearance,
+      webkitAppearance: s.webkitAppearance
+    };
+  }
+  function holderMeasure(sel, parentSel) {
+    var el = document.querySelector(sel);
+    var parent = document.querySelector(parentSel);
+    if (!el || !parent) return null;
+    var m = measure(sel);
+    m.parentWidth = parent.getBoundingClientRect().width;
+    return m;
+  }
+  function onReady() {
+    var data = {
+      meta: holderMeasure('#scholar-meta .ljr-badges', '#scholar-meta'),
+      badge: measure('#scholar-meta .ljr-badge'),
+      more: measure('#scholar-meta .ljr-more'),
+      detail: measure('#scholar-meta .ljr-detail'),
+      group: measure('#scholar-meta .ljr-detail-group'),
+      row: measure('#scholar-meta .ljr-detail-row'),
+      cat: measure('#scholar-meta .ljr-detail-cat'),
+      q: measure('#scholar-meta .ljr-detail-q'),
+      title: measure('#scholar-meta .ljr-detail-title'),
+      publisher: holderMeasure('#publisher .ljr-badges.ljr-publisher-row', '#publisher')
+    };
+    var json = JSON.stringify(data);
+    var bytes = new TextEncoder().encode(json);
+    var bin = '';
+    for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    document.getElementById('result').textContent = btoa(bin);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', onReady);
+  } else {
+    onReady();
+  }
+})();
+</script>
+
+<pre id="result"></pre>
+</body>
+</html>

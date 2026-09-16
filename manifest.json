@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "SI Journal Rank",
+  "version": "1.1.0",
+  "description": "在學術搜尋頁面上顯示 CSSCI、新銳分區與 JCR 期刊評價。所有資料都在本機，不需登入。",
+  "permissions": [
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "data/rank-data.json"
+      ],
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ]
+    }
+  ]
+}

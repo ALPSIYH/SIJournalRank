@@ -1,0 +1,242 @@
+/* =========================================================================
+   SI Journal Rank — badge styles (EasyScholar-inspired pill family)
+   Compact isolated pill family: 11px font, ~6px radius, 19px height (18.5–19.05px band).
+   Every extension-critical declaration is scoped under .ljr-badges and
+   marked !important so hostile publisher CSS (span / [role=button] rules
+   with !important) cannot resize or restyle the extension UI.
+   ========================================================================= */
+
+.ljr-badges {
+  --ljr-q1:  #d81b60;   /* magenta-pink — best quartile */
+  --ljr-q2:  #b94a48;   /* brick red */
+  --ljr-q3:  #b45309;   /* burnt amber */
+  --ljr-q4:  #2e7d32;   /* deep green */
+  --ljr-top: #1f2937;   /* graphite award chip */
+
+  --ljr-ahci:  #475569; /* slate */
+  --ljr-cssci: #1d5fae; /* royal blue */
+  --ljr-pku:   #5b3e90; /* violet */
+  --ljr-cscd:  #0f766e; /* teal */
+  --ljr-if:    #64748b; /* neutral slate (numeric metadata) */
+
+  --ljr-more-bg:     #eef2ff;
+  --ljr-more-fg:     #4338ca;
+  --ljr-more-border: #c7d2fe;
+  --ljr-more-hover:  #e0e7ff;
+
+  display: inline-flex !important;   /* hostile span display:block must not win */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 2px 6px !important;    /* metadata: 6px left separation */
+  max-width: min(440px, 100%);
+  vertical-align: baseline !important; /* baseline beside Scholar metadata */
+  font-family: -apple-system, "SF Pro Text", "Helvetica Neue", "PingFang TC",
+    "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+
+  /* scoped isolation reset — hostile span/[role=button] !important rules */
+  padding: 0 !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  background: transparent !important;
+  color: inherit !important;
+  border: 0 none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+}
+
+.ljr-badges .ljr-badge {
+  display: inline-flex !important;
+  align-items: center;
+  margin: 0 !important;
+  padding: 3px 7px 2px !important;   /* ~3px vertical / 7px horizontal */
+  border: 0 none !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  line-height: 14px !important;
+  letter-spacing: .01em;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* rank colors — shared by JCR quartiles and 新銳 区; !important beats
+   hostile span { background:#999 !important } */
+.ljr-badges .ljr-q1  { background: var(--ljr-q1) !important; }
+.ljr-badges .ljr-q2  { background: var(--ljr-q2) !important; }
+.ljr-badges .ljr-q3  { background: var(--ljr-q3) !important; }
+.ljr-badges .ljr-q4  { background: var(--ljr-q4) !important; }
+
+/* 新銳Top: graphite award chip, separated from the amber rank scale */
+.ljr-badges .ljr-top { background: var(--ljr-top) !important; }
+.ljr-badges .ljr-top::before {
+  content: "★";
+  color: #fbbf24;
+  font-size: .85em;
+  line-height: 1;
+  margin-right: 3px;
+}
+
+/* presence / index markers — cool institutional family */
+.ljr-badges .ljr-ahci  { background: var(--ljr-ahci) !important; }
+.ljr-badges .ljr-cssci { background: var(--ljr-cssci) !important; }
+.ljr-badges .ljr-pku   { background: var(--ljr-pku) !important; }
+.ljr-badges .ljr-cscd  { background: var(--ljr-cscd) !important; }
+.ljr-badges .ljr-if    { background: var(--ljr-if) !important; font-weight: 600; }
+/* "分類詳情" expander: same compact pill geometry, indigo ghost.
+   Selectors are scoped under .ljr-badges (0,2,0) so they beat hostile
+   [role=button] !important rules (0,1,0) even when they come later. */
+.ljr-badges .ljr-more {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  margin: 0 !important;
+  padding: 2px 7px 1px !important;   /* 1px border compensated to match badge */
+  border: 1px solid var(--ljr-more-border) !important;
+  border-radius: 6px !important;
+  background: var(--ljr-more-bg) !important;
+  color: var(--ljr-more-fg) !important;
+  font-size: 11px !important;
+  font-weight: 600;
+  line-height: 14px !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  flex-wrap: nowrap !important;      /* never wraps internally */
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  transition: background .15s ease, border-color .15s ease;
+}
+.ljr-badges .ljr-more svg {
+  display: block;
+  transition: transform .18s ease;
+}
+.ljr-badges .ljr-more:hover {
+  background: var(--ljr-more-hover) !important;
+  border-color: #a5b4fc !important;
+}
+.ljr-badges .ljr-more.ljr-open svg { transform: rotate(180deg); }
+.ljr-badges .ljr-more:focus-visible {
+  outline: 2px solid var(--ljr-more-fg) !important;
+  outline-offset: 1px !important;
+}
+/* the visible label is a plain span — hostile span rules must not blow it up */
+.ljr-badges .ljr-more .ljr-more-label {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+/* expandable category detail card (rendered as a block below the badges) */
+.ljr-badges .ljr-detail {
+  flex-basis: 100% !important;
+  display: block !important;
+  margin: 6px 0 2px 0 !important;
+  padding: 10px 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  font-size: 12px !important;
+  line-height: 1.55 !important;
+  color: #334155 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .08);
+  max-width: 440px !important;
+  box-sizing: border-box !important;
+}
+.ljr-badges .ljr-detail-group {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+.ljr-badges .ljr-detail-group + .ljr-detail-group {
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+  border-top: 1px solid #eef0f3 !important;
+}
+.ljr-badges .ljr-detail-title {
+  display: block !important;
+  margin: 0 0 3px !important;
+  padding: 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  font-size: 10px !important;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #374151 !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+.ljr-badges .ljr-detail-row {
+  display: flex !important;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 !important;
+  padding: 1px 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+.ljr-badges .ljr-detail-cat {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  color: #4b5563 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+  box-sizing: border-box !important;
+}
+.ljr-badges .ljr-detail-q {
+  display: block !important;
+  font-weight: 600;
+  color: #1f2933 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 none !important;
+  background: transparent !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  box-sizing: border-box !important;
+}
+
+/* publisher row: compact standalone row immediately under the article
+   title — zero left offset, modest vertical margins, content-sized */
+.ljr-badges.ljr-publisher-row {
+  display: flex !important;
+  width: max-content;
+  max-width: 440px !important;
+  margin: 6px 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ljr-badges .ljr-more svg { transition: none !important; }
+}
