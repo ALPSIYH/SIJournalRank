@@ -53,7 +53,14 @@ if(typeof browser=="undefined"&&typeof chrome!=="undefined"&&chrome.runtime){var
     if (s == null) {
       return "";
     }
-    return String(s).toUpperCase().replace(/[^A-Z0-9&\u4e00-\u9fa5 ]+/g, " ").replace(/\s+/g, " ").trim();
+    var parts = String(s).toUpperCase().split(/[^A-Z0-9&\u4e00-\u9fa5]+/);
+    var kept = [];
+    for (var i = 0; i < parts.length; i = i + 1) {
+      if (parts[i]) {
+        kept.push(parts[i]);
+      }
+    }
+    return kept.join(" ");
   }
 
   function canonical(s) {

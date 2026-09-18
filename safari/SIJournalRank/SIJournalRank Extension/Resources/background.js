@@ -4,7 +4,10 @@ let rankDataPromise = null;
 
 function getRankData() {
   if (rankDataPromise === null) {
-    rankDataPromise = fetch(browser.runtime.getURL("data/rank-data.json")).then(function(r) { return r.json(); });
+    var dataUrl = browser.runtime.getURL("data/rank-data.json");
+    rankDataPromise = fetch(dataUrl).then(function(response) {
+      return response.json();
+    });
   }
   return rankDataPromise;
 }
@@ -13,7 +16,14 @@ function normalize(s) {
   if (s == null) {
     return "";
   }
-  return String(s).toUpperCase().replace(/[^A-Z0-9&\u4e00-\u9fa5 ]+/g, " ").replace(/\s+/g, " ").trim();
+  var parts = String(s).toUpperCase().split(/[^A-Z0-9&\u4e00-\u9fa5]+/);
+  var kept = [];
+  for (var i = 0; i < parts.length; i = i + 1) {
+    if (parts[i]) {
+      kept.push(parts[i]);
+    }
+  }
+  return kept.join(" ");
 }
 
 function resolveRecord(db, rawName) {
