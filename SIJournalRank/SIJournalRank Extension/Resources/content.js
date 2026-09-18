@@ -2,6 +2,8 @@ if(typeof browser=="undefined"&&typeof chrome!=="undefined"&&chrome.runtime){var
 
 (function() {
   var rankDataPromise = null;
+  var RANK_DATA_URL = "data/rank-data.json";
+  var RANK_DATA_SCHEMA_VERSION = 1;
 
   // 调试日志默认关闭：在页面控制台执行 localStorage.setItem("ljr-debug","1") 并刷新即可打开。
   var DEBUG = false;
@@ -17,9 +19,32 @@ if(typeof browser=="undefined"&&typeof chrome!=="undefined"&&chrome.runtime){var
     }
   }
 
+  function normalizeDataPack(raw) {
+    if (raw && typeof raw === "object" && Array.isArray(raw) === false && raw.records && typeof raw.records === "object" && (raw.format === "si-journal-rank" || raw.schemaVersion || raw.dataVersion || typeof raw.recordCount === "number")) {
+      if (raw.schemaVersion && raw.schemaVersion > RANK_DATA_SCHEMA_VERSION) {
+        log("[LJR] data pack schema newer than extension", raw.schemaVersion);
+      }
+      return raw.records;
+    }
+    return raw && typeof raw === "object" ? raw : {};
+  }
+
+  function fetchRankJson(url) {
+    return fetch(browser.runtime.getURL(url)).then(function(r) {
+      if (r && r.ok === false) {
+        throw new Error("HTTP " + r.status);
+      }
+      return r.json();
+    });
+  }
+
   function getRankData() {
     if (rankDataPromise === null) {
-      rankDataPromise = fetch(browser.runtime.getURL("data/rank-data.json")).then(function(r) { return r.json(); });
+      rankDataPromise = fetchRankJson(RANK_DATA_URL).then(normalizeDataPack).catch(function(err) {
+        rankDataPromise = null;
+        log("[LJR] data pack unavailable; no journal badges will render", err);
+        throw err;
+      });
     }
     return rankDataPromise;
   }

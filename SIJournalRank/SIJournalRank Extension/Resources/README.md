@@ -19,7 +19,25 @@ Taylor & Francis、SAGE、Nature、Oxford Academic、IEEE Xplore 與 ACM Digital
 - 新銳分區（2026）
 - JCR 2025
 
-資料檔：`data/rank-data.json`
+資料檔：`data/rank-data.json`（外部 data pack，不進 Git，也不隨 GitHub repo 發布）
+
+## 資料檔與更新
+
+擴充功能只讀 `data/rank-data.json`。這個檔案不進 Git，也不隨 GitHub repo 發布；
+GitHub 上的版本只有程式碼與資料格式文件。
+
+若沒有放 `data/rank-data.json`，擴充功能不會顯示期刊 badge，
+popup 會顯示「未安裝資料包」。
+
+手動安裝／更新（方案 A）：
+
+1. 取得或重建新的 `data/rank-data.json`
+2. 驗證：`python3 scripts/validate_data_pack.py data/rank-data.json`
+3. 取代 `data/rank-data.json`
+4. 到 `chrome://extensions` 重新載入擴充功能
+5. Safari 版複製到 Xcode Resources 後重新 build
+
+data pack 格式與重建方式見 `data/README.md`。
 
 ## 安裝（開發者模式）
 
