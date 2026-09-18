@@ -1,14 +1,7 @@
-# SI Journal Rank data pack
+# 期刊評價資料格式
 
-`rank-data.json` 是外部資料檔，不進 Git，也不隨 GitHub repo 發布。
-GitHub 上的版本只有程式碼與這份合約文件，沒有期刊排名 records。
-
-## 檔案
-
-| 檔案 | 用途 | Git |
-|---|---|---|
-| `rank-data.json` | 外部 data pack；產生後放到 extension 的 `data/` 使用 | 不追蹤 |
-| `README.md` | 本文件 | 追蹤 |
+`rank-data.json` 是 SI Journal Rank 使用的期刊評價資料檔，放在擴充功能的
+`data/` 目錄。
 
 ## 格式
 
@@ -35,27 +28,24 @@ GitHub 上的版本只有程式碼與這份合約文件，沒有期刊排名 rec
 }
 ```
 
-- `records` 的 key 是正規化後的期刊名／別名（英文大寫；中文保留）。
+- `records` 的 key 是正規化後的期刊名或別名，英文大寫，中文保留。
 - `recordCount` 必須等於 `records` 的實際筆數。
-- 程式也向後相容舊的 flat map（沒有最外層 metadata 的版本）。
-- data pack 只放排名必要欄位，不要把來源檔、路徑、授權資訊、URL 或私有 metadata 放進去。
+- 程式也支援舊版沒有外層 metadata 的 flat map。
+- 只放入排名必要欄位。
 
-## 安裝與更新（方案 A）
+## 安裝與更新
 
-1. 取得或產生新的 `rank-data.json`。
-2. 驗證：
+1. 取得或產生 `rank-data.json`。
+2. 驗證資料檔：
 
    ```bash
    python3 scripts/validate_data_pack.py data/rank-data.json
    ```
 
-3. 把檔案放到 `data/rank-data.json`。
+3. 將檔案放到 `data/rank-data.json`。
 4. 到 `chrome://extensions` 重新載入 SI Journal Rank。
-5. Safari 版把同一份檔案複製到 Xcode 專案的
+5. Safari 版將同一份檔案放到 Xcode 專案的
    `SIJournalRank Extension/Resources/data/rank-data.json`，再重新 build app。
-
-如果 `data/rank-data.json` 不存在，擴充功能不會顯示任何期刊 badge，
-popup 會顯示「未安裝資料包：請放入 data/rank-data.json」。
 
 ## 從 raw 檔重建
 
@@ -77,4 +67,4 @@ python3 scripts/add_nlm_aliases.py \
   --safari-resources /path/to/Safari/Resources/data/rank-data.json
 ```
 
-`--no-sync` 只更新本地 data pack；`--safari-resources` 可覆寫 Safari 路徑。
+`--no-sync` 只更新本地資料檔；`--safari-resources` 可覆寫 Safari 路徑。
