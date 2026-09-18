@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  SIJournalRank
 //
-//  Created by SI Journal Rank contributors on 2026/8/25.
+//  Created for the SI Journal Rank project.
 //
 
 import Cocoa
