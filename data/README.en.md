@@ -48,7 +48,7 @@ Actual display depends on the file contents.
 3. Put the file at `data/rank-data.json`.
 4. Reload SI Journal Rank at `chrome://extensions`.
 5. For Safari, place the same file at the Xcode project's
-   `SIJournalRank Extension/Resources/data/rank-data.json`, then rebuild the app.
+   `safari/SIJournalRank/SIJournalRank Extension/Resources/data/rank-data.json`, then rebuild the app.
 
 ## Rebuild from raw files
 

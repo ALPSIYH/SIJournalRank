@@ -44,5 +44,5 @@ The file may contain data for the ranking systems listed above. See
 
 ## Safari
 
-The Safari Web Extension Xcode project lives in the `SIJournalRank-safari` project:
-`SIJournalRank/SIJournalRank.xcodeproj`.
+The Safari Web Extension Xcode project lives in the `safari/` directory:
+`safari/SIJournalRank/SIJournalRank.xcodeproj`.

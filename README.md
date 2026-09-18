@@ -45,5 +45,5 @@ data/rank-data.json
 
 ## Safari
 
-Safari Web Extension 的 Xcode 專案位於 `SIJournalRank-safari` 專案：
-`SIJournalRank/SIJournalRank.xcodeproj`。
+Safari Web Extension 的 Xcode 專案位於 `safari/` 目錄：
+`safari/SIJournalRank/SIJournalRank.xcodeproj`。

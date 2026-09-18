@@ -27,7 +27,7 @@ const MANIFEST = path.join(ROOT, 'manifest.json');
 const README = path.join(ROOT, 'README.md');
 const SAFARI_ROOT = process.env.SIJOURNALRANK_SAFARI_DIR
   ? path.resolve(process.env.SIJOURNALRANK_SAFARI_DIR)
-  : path.join(ROOT, '..', 'SIJournalRank-safari');
+  : path.join(ROOT, 'safari');
 const RESOURCES_README = path.join(
   SAFARI_ROOT, 'SIJournalRank',
   'SIJournalRank Extension', 'Resources', 'README.md'
@@ -61,7 +61,7 @@ function main() {
   );
 
   if (SAFARI_PRESENT === false) {
-    skip('Safari Xcode version checks (SIJournalRank-safari not found)', SAFARI_ROOT);
+    skip('Safari Xcode version checks (safari/ not found)', SAFARI_ROOT);
   } else {
     const pbx = fs.readFileSync(PBXPROJ, 'utf8');
     const marketingVersions = [];
@@ -89,7 +89,7 @@ function main() {
   if (SAFARI_PRESENT) {
     readmePairs.push({ label: 'Xcode Resources README', file: RESOURCES_README });
   } else {
-    skip('Xcode Resources README checks (SIJournalRank-safari not found)', SAFARI_ROOT);
+    skip('Xcode Resources README checks (safari/ not found)', SAFARI_ROOT);
   }
   for (const pair of readmePairs) {
     const text = fs.readFileSync(pair.file, 'utf8');

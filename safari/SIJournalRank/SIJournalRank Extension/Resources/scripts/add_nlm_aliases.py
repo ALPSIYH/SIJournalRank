@@ -29,10 +29,7 @@ DB = DATA / "rank-data.json"
 RAW = DATA / "raw"
 NLM_FILE = RAW / "J_Medline.txt"
 NLM_URL = "https://ftp.ncbi.nlm.nih.gov/pubmed/J_Medline.txt"
-SAFARI_RESOURCES = (
-    ROOT.parent / "SIJournalRank-safari" / "SIJournalRank"
-    / "SIJournalRank Extension" / "Resources" / "data" / "rank-data.json"
-)
+SAFARI_RESOURCES = DB
 
 
 def load_data():

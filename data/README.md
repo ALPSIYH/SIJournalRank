@@ -49,7 +49,7 @@ JCR 等體系；實際顯示內容依資料檔內容而定。
 3. 將檔案放到 `data/rank-data.json`。
 4. 到 `chrome://extensions` 重新載入 SI Journal Rank。
 5. Safari 版將同一份檔案放到 Xcode 專案的
-   `SIJournalRank Extension/Resources/data/rank-data.json`，再重新 build app。
+   `safari/SIJournalRank/SIJournalRank Extension/Resources/data/rank-data.json`，再重新 build app。
 
 ## 從 raw 檔重建
 

@@ -7,3 +7,7 @@ __pycache__/
 data/rank-data.json
 data/rank-data.sample.json
 data/raw/
+
+# Safari production data stays local.
+safari/**/Resources/data/rank-data.json
+safari/**/Resources/data/raw/

@@ -30,7 +30,7 @@ RAW = DATA / "raw"
 NLM_FILE = RAW / "J_Medline.txt"
 NLM_URL = "https://ftp.ncbi.nlm.nih.gov/pubmed/J_Medline.txt"
 SAFARI_RESOURCES = (
-    ROOT.parent / "SIJournalRank-safari" / "SIJournalRank"
+    ROOT / "safari" / "SIJournalRank"
     / "SIJournalRank Extension" / "Resources" / "data" / "rank-data.json"
 )
 
