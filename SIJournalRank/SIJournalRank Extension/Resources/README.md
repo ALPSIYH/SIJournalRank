@@ -10,7 +10,9 @@
 Taylor & Francis、SAGE、Nature、Oxford Academic、IEEE Xplore 與 ACM Digital Library。
 遇到出版社的人機驗證頁時，文章 DOM 尚未載入，因此不會顯示標籤。
 
-## 收錄資料
+## 支援的評價體系
+
+擴充功能可顯示下列評價體系；實際內容取決於你提供的資料檔。
 
 - CSSCI / 南大核心（2025-2026）
 - 北大核心（2023）
@@ -27,7 +29,8 @@ Taylor & Francis、SAGE、Nature、Oxford Academic、IEEE Xplore 與 ACM Digital
 data/rank-data.json
 ```
 
-資料檔格式與產生方式見 [`data/README.md`](data/README.md)。
+資料檔可包含上述評價體系的資料。格式與產生方式見
+[`data/README.md`](data/README.md)。
 
 ## 安裝（開發者模式）
 
