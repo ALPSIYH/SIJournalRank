@@ -2,3 +2,8 @@
 node_modules/
 __pycache__/
 *.pyc
+
+# Journal ranking data stays local and is never committed.
+data/rank-data.json
+data/rank-data.sample.json
+data/raw/

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Build SI Journal Rank's data/rank-data.json from raw CSSCI, XR2026, JCR2025 and official JCR xlsx."""
+import argparse
 import csv
+import datetime
 import json
 import pathlib
 import re
@@ -11,6 +13,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw"
 OFFICIAL_JCR_DIR = RAW / "official_jcr2025"
 OUT = ROOT / "data" / "rank-data.json"
+FORMAT = "si-journal-rank"
+SCHEMA_VERSION = 1
 
 def normalize(name):
     if not name:
@@ -117,10 +121,23 @@ def read_official_jcr(data, path):
         wb.close()
 
 def main():
+    ap = argparse.ArgumentParser(description="Build a versioned SI Journal Rank data pack.")
+    ap.add_argument("--raw-dir", default=str(RAW), help="directory containing the raw CSSCI/XR/JCR source files")
+    ap.add_argument("--official-jcr-dir", default=None, help="directory containing official JCR xlsx exports (default: <raw-dir>/official_jcr2025)")
+    ap.add_argument("--output", default=str(OUT), help="output data pack path")
+    ap.add_argument("--data-version", default="", help="dataVersion written into the pack; defaults to build-YYYY-MM-DD")
+    args = ap.parse_args()
+
+    raw_dir = pathlib.Path(args.raw_dir)
+    official_jcr_dir = pathlib.Path(args.official_jcr_dir) if args.official_jcr_dir else raw_dir / "official_jcr2025"
+    out = pathlib.Path(args.output)
+    generated_at = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    data_version = args.data_version.strip() or ("build-" + generated_at[:10])
+
     data = {}
 
     # 1) CSSCI / 北大核心 / CSCD / 科技核心
-    csci_path = RAW / "csci_2025_2026.json"
+    csci_path = raw_dir / "csci_2025_2026.json"
     if csci_path.exists():
         raw = json.loads(csci_path.read_text(encoding="utf-8"))
         index = raw.get("index", {})
@@ -154,7 +171,7 @@ def main():
                 data[alias_key] = data[real_key]
 
     # 2) XR2026
-    xr_path = RAW / "XR2026-UTF8.csv"
+    xr_path = raw_dir / "XR2026-UTF8.csv"
     if xr_path.exists():
         with xr_path.open(encoding="utf-8", errors="ignore") as f:
             reader = csv.DictReader(f)
@@ -187,7 +204,7 @@ def main():
                         data[zkey].update(entry)
 
     # 3) JCR2025 full CSV
-    jcr_path = RAW / "JCR2025-UTF8.csv"
+    jcr_path = raw_dir / "JCR2025-UTF8.csv"
     if jcr_path.exists():
         with jcr_path.open(encoding="utf-8", errors="ignore") as f:
             reader = csv.DictReader(f)
@@ -220,15 +237,26 @@ def main():
                         data[key].update(entry)
 
     # 4) Official JCR 2025 xlsx exports
-    if OFFICIAL_JCR_DIR.exists():
-        for xlsx in sorted(OFFICIAL_JCR_DIR.glob("*.xlsx")):
+    if official_jcr_dir.exists():
+        for xlsx in sorted(official_jcr_dir.glob("*.xlsx")):
             read_official_jcr(data, xlsx)
             print("official jcr:", xlsx.name)
 
-    # 5) write
-    OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
-    print("wrote", OUT)
+    # 5) write a versioned data pack
+    pack = {
+        "format": FORMAT,
+        "schemaVersion": SCHEMA_VERSION,
+        "dataVersion": data_version,
+        "generatedAt": generated_at,
+        "recordCount": len(data),
+        "records": data,
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(pack, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("wrote", out)
     print("entries", len(data))
+    print("dataVersion", data_version)
+
 
 if __name__ == "__main__":
     main()

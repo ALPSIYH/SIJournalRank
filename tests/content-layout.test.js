@@ -32,9 +32,60 @@ const assert = require('node:assert');
 const ROOT = path.resolve(__dirname, '..');
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
 const CONTENT_JS = fs.readFileSync(path.join(ROOT, 'content.js'), 'utf8');
-const RANK_DATA = JSON.parse(
-  fs.readFileSync(path.join(ROOT, 'data', 'rank-data.json'), 'utf8')
-);
+// Synthetic test doubles only. These rankings are fake and are NOT production data.
+const TEST_RANK_DATA = {
+  format: 'si-journal-rank',
+  schemaVersion: 1,
+  dataVersion: 'test-fixture',
+  recordCount: 7,
+  records: {
+    'INTERNATIONAL JOURNAL OF HUMAN GENETICS': {
+      sci: 'Q1',
+      sciCats: [{ category: 'GENETICS & HEREDITY', quartile: 'Q1' }],
+      sciif: '5.2',
+      xr: '1区',
+      xrCats: [{ category: '生物学', quartile: '1区' }]
+    },
+    'JOURNAL OF EUROPEAN PUBLIC POLICY': {
+      ssci: 'Q1',
+      ssciCats: [{ category: 'POLITICAL SCIENCE', quartile: 'Q1' }],
+      xr: '1区',
+      xrCats: [{ category: '政治学', quartile: '1区' }]
+    },
+    'NATURE HUMAN BEHAVIOUR': {
+      sci: 'Q1',
+      sciCats: [{ category: 'PSYCHOLOGY, BIOLOGICAL', quartile: 'Q1' }],
+      sciif: '15.0',
+      xr: '1区',
+      xrCats: [{ category: '心理学', quartile: '1区' }]
+    },
+    'POLITICAL SCIENCE QUARTERLY': {
+      ssci: 'Q2',
+      ssciCats: [{ category: 'POLITICAL SCIENCE', quartile: 'Q2' }],
+      xr: '2区',
+      xrCats: [{ category: '政治学', quartile: '2区' }]
+    },
+    'PARTY POLITICS': {
+      ssci: 'Q1',
+      ssciCats: [{ category: 'POLITICAL SCIENCE', quartile: 'Q1' }],
+      xr: '1区',
+      xrCats: [{ category: '政治学', quartile: '1区' }]
+    },
+    'ACM TRANSACTIONS ON INFORMATION SYSTEMS': {
+      sci: 'Q2',
+      sciCats: [{ category: 'COMPUTER SCIENCE, INFORMATION SYSTEMS', quartile: 'Q2' }],
+      sciif: '4.0',
+      xr: '2区',
+      xrCats: [{ category: '计算机科学', quartile: '2区' }]
+    },
+    'NATIONS AND NATIONALISM': {
+      ssci: 'Q1',
+      ssciCats: [{ category: 'POLITICAL SCIENCE', quartile: 'Q1' }],
+      xr: '1区',
+      xrCats: [{ category: '政治学', quartile: '1区' }]
+    }
+  }
+};
 
 /* --------------------------------------------------------------------------
  * Minimal DOM shim — implements only the DOM surface content.js touches
@@ -403,7 +454,8 @@ const silentConsole = new Proxy(console, {
   }
 });
 
-function runScenario(fixtureFile, hostname, pathname) {
+function runScenario(fixtureFile, hostname, pathname, options) {
+  const opts = options || {};
   const html = fs.readFileSync(path.join(FIXTURES_DIR, fixtureFile), 'utf8');
   const document = new MiniDocument();
   document.body.innerHTML = html;
@@ -412,7 +464,7 @@ function runScenario(fixtureFile, hostname, pathname) {
     document,
     location: { hostname, pathname, href: 'https://' + hostname + pathname },
     browser: { runtime: { getURL: (p) => 'https://extension.local/' + p } },
-    fetch: async () => ({ json: async () => RANK_DATA, text: async () => '' }),
+    fetch: opts.fetchImpl || (async () => ({ json: async () => TEST_RANK_DATA, text: async () => '' })),
     MutationObserver: class {
       constructor() {}
       observe() {}
@@ -437,8 +489,8 @@ async function flush() {
   }
 }
 
-async function scenario(fixtureFile, hostname, pathname) {
-  const doc = runScenario(fixtureFile, hostname, pathname);
+async function scenario(fixtureFile, hostname, pathname, options) {
+  const doc = runScenario(fixtureFile, hostname, pathname, options);
   await flush();
   return doc;
 }
@@ -837,6 +889,39 @@ test(
       more.getAttribute('aria-label'),
       '分類詳情',
       'Space must restore closed aria-label to "分類詳情"'
+    );
+  }
+);
+
+test(
+  '16. Missing data pack renders no badges and requests no bundled data file',
+  async () => {
+    const requests = [];
+    const doc = await scenario('scholar-search.html', 'scholar.google.com', '/scholar?hl=zh-TW&q=human+genetics', {
+      fetchImpl: async (url) => {
+        requests.push(url);
+        return { ok: false, status: 404, json: async () => ({}) };
+      }
+    });
+    assert.strictEqual(
+      requests.length,
+      1,
+      'only the external data pack should be requested — got: ' + JSON.stringify(requests)
+    );
+    assert.strictEqual(
+      requests[0].indexOf('data/rank-data.json') >= 0,
+      true,
+      'the requested file must be data/rank-data.json'
+    );
+    assert.strictEqual(
+      requests.some((u) => u.indexOf('data/rank-data.sample.json') >= 0),
+      false,
+      'the loader must not request any bundled sample data file'
+    );
+    assert.strictEqual(
+      doc.querySelectorAll('.ljr-badges').length,
+      0,
+      'missing data pack must render zero badges'
     );
   }
 );

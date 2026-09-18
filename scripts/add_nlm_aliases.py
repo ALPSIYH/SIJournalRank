@@ -35,6 +35,28 @@ SAFARI_RESOURCES = (
 )
 
 
+def load_data():
+    """Return (data_pack, flat_records), accepting both versioned and legacy files."""
+    raw = json.loads(DB.read_text(encoding="utf-8"))
+    if isinstance(raw, dict) and isinstance(raw.get("records"), dict):
+        return raw, raw["records"]
+    records = raw if isinstance(raw, dict) else {}
+    return {
+        "format": "si-journal-rank",
+        "schemaVersion": 0,
+        "dataVersion": "legacy",
+        "generatedAt": "",
+        "recordCount": len(records),
+        "records": records,
+    }, records
+
+
+def save_data(pack, records):
+    pack["records"] = records
+    pack["recordCount"] = len(records)
+    DB.write_text(json.dumps(pack, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def normalize(name):
     if not name:
         return ""
@@ -89,7 +111,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--nlm", default=None, help="existing J_Medline.txt path")
     ap.add_argument("--no-sync", action="store_true", help="do not copy into the Xcode Resources")
+    ap.add_argument("--safari-resources", default=None, help="override the Safari Resources rank-data.json path")
     args = ap.parse_args()
+    safari_resources = pathlib.Path(args.safari_resources) if args.safari_resources else SAFARI_RESOURCES
 
     nlm_path = pathlib.Path(args.nlm) if args.nlm else NLM_FILE
     if not nlm_path.exists():
@@ -100,7 +124,7 @@ def main():
     pairs = load_nlm(nlm_path)
     print("nlm records:", len(pairs))
 
-    db = json.loads(DB.read_text(encoding="utf-8"))
+    pack, db = load_data()
     before = len(db)
     added = 0
     for abbr, title in pairs:
@@ -113,19 +137,19 @@ def main():
         db[abbr_key] = rec
         added += 1
 
-    DB.write_text(json.dumps(db, ensure_ascii=False, indent=1), encoding="utf-8")
+    save_data(pack, db)
     print("entries: %d -> %d (aliases added %d)" % (before, len(db), added))
 
     if not args.no_sync:
-        if SAFARI_RESOURCES.parent.exists():
-            shutil.copyfile(DB, SAFARI_RESOURCES)
+        if safari_resources.parent.exists():
+            shutil.copyfile(DB, safari_resources)
             src = hashlib.sha256(DB.read_bytes()).hexdigest()
-            dst = hashlib.sha256(SAFARI_RESOURCES.read_bytes()).hexdigest()
+            dst = hashlib.sha256(safari_resources.read_bytes()).hexdigest()
             print("synced to Xcode Resources, sha256 match:", src == dst)
             if src != dst:
                 sys.exit(1)
         else:
-            print("safari resources not found, skipped:", SAFARI_RESOURCES)
+            print("safari resources not found, skipped:", safari_resources)
     print("next: rebuild the Safari app (xcodebuild) so the appex picks up the new data")
 
 
