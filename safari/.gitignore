@@ -1,0 +1,12 @@
+.DS_Store
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Journal ranking data stays local and is never committed.
+**/Resources/data/rank-data.json
+**/Resources/data/rank-data.sample.json
+**/Resources/data/raw/
+__pycache__/
+*.pyc
